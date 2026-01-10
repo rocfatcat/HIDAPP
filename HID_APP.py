@@ -214,12 +214,14 @@ class HIDTesterApp:
         ttk.Button(self.out_f2, text="Set Motor Angle 82.3", command=lambda: self.send_sequence2(cmd_823)).grid(row=2, column=0, padx=10, pady=5)
         cmd_15 = ["E1 01 03", "10 01 07 FD", "E1 01 02 0F 90"]
         ttk.Button(self.out_f2, text="Set Motor Angle 15", command=lambda: self.send_sequence2(cmd_15)).grid(row=2, column=1, padx=10, pady=5)
-        ttk.Button(self.out_f2, text="Get Motor Position", command=lambda: [self.out_entry2.delete(0,tk.END), self.out_entry2.insert(0,"11 01")]).grid(row=3, column=0, padx=10, pady=5)
+        cmd_angle = ["11 01"]
+        ttk.Button(self.out_f2, text="Get Motor Position", command=lambda: self.send_sequence2(cmd_angle)).grid(row=3, column=0, padx=10, pady=5)
         cmd_fan = ["F1 01 20", "F1 01 40 32"]
         ttk.Button(self.out_f2, text="Fab on", command=lambda: self.send_sequence2(cmd_fan)).grid(row=3, column=1, padx=10, pady=5)
         
+        cmd_tmp = ["F1 01 10"]
         ttk.Button(self.out_f2, text="Get Temp", 
-                   command=lambda: [self.out_entry2.delete(0,tk.END), self.out_entry2.insert(0,"F1 01 10")]).grid(row=4, column=0, padx=10, pady=5)
+                   command=lambda: self.send_sequence2(cmd_tmp)).grid(row=4, column=0, padx=10, pady=5)
 
         # --- Middle part for processed data ---
         proc_f = ttk.LabelFrame(frame_io, text="Processed Data")
