@@ -16,10 +16,66 @@ class HIDTesterApp:
         self.ep_out = None
         self.reading_status = False
         self.monitor_text2 = None
-
+        
         # Vars for processed data on tab 3
         self.voltage_var = tk.StringVar(value="N/A")
         self.fan_duty_var = tk.StringVar(value="N/A")
+        self.temperature_var = tk.StringVar(value="N/A")
+
+        # Embed the temperature table directly into the code
+        self.temp_table = [
+            {'temp': 0, 'max': 188, 'min': 186}, {'temp': 1, 'max': 186, 'min': 184},
+            {'temp': 2, 'max': 184, 'min': 182}, {'temp': 3, 'max': 182, 'min': 180},
+            {'temp': 4, 'max': 179, 'min': 177}, {'temp': 5, 'max': 177, 'min': 175},
+            {'temp': 6, 'max': 175, 'min': 173}, {'temp': 7, 'max': 172, 'min': 170},
+            {'temp': 8, 'max': 170, 'min': 168}, {'temp': 9, 'max': 168, 'min': 166},
+            {'temp': 10, 'max': 165, 'min': 163}, {'temp': 11, 'max': 163, 'min': 161},
+            {'temp': 12, 'max': 160, 'min': 158}, {'temp': 13, 'max': 158, 'min': 156},
+            {'temp': 14, 'max': 155, 'min': 154}, {'temp': 15, 'max': 153, 'min': 151},
+            {'temp': 16, 'max': 150, 'min': 149}, {'temp': 17, 'max': 148, 'min': 146},
+            {'temp': 18, 'max': 145, 'min': 144}, {'temp': 19, 'max': 143, 'min': 141},
+            {'temp': 20, 'max': 140, 'min': 139}, {'temp': 21, 'max': 138, 'min': 137},
+            {'temp': 22, 'max': 136, 'min': 134}, {'temp': 23, 'max': 133, 'min': 132},
+            {'temp': 24, 'max': 131, 'min': 129}, {'temp': 25, 'max': 128, 'min': 127},
+            {'temp': 26, 'max': 126, 'min': 124}, {'temp': 27, 'max': 123, 'min': 122},
+            {'temp': 28, 'max': 121, 'min': 120}, {'temp': 29, 'max': 119, 'min': 117},
+            {'temp': 30, 'max': 116, 'min': 115}, {'temp': 31, 'max': 114, 'min': 113},
+            {'temp': 32, 'max': 112, 'min': 110}, {'temp': 33, 'max': 110, 'min': 108},
+            {'temp': 34, 'max': 107, 'min': 106}, {'temp': 35, 'max': 105, 'min': 103},
+            {'temp': 36, 'max': 103, 'min': 101}, {'temp': 37, 'max': 101, 'min': 99},
+            {'temp': 38, 'max': 99, 'min': 97}, {'temp': 39, 'max': 97, 'min': 95},
+            {'temp': 40, 'max': 95, 'min': 93}, {'temp': 41, 'max': 93, 'min': 91},
+            {'temp': 42, 'max': 91, 'min': 89}, {'temp': 43, 'max': 89, 'min': 87},
+            {'temp': 44, 'max': 87, 'min': 85}, {'temp': 45, 'max': 85, 'min': 83},
+            {'temp': 46, 'max': 83, 'min': 81}, {'temp': 47, 'max': 81, 'min': 79},
+            {'temp': 48, 'max': 79, 'min': 77}, {'temp': 49, 'max': 78, 'min': 76},
+            {'temp': 50, 'max': 76, 'min': 74}, {'temp': 51, 'max': 74, 'min': 72},
+            {'temp': 52, 'max': 72, 'min': 70}, {'temp': 53, 'max': 71, 'min': 69},
+            {'temp': 54, 'max': 69, 'min': 67}, {'temp': 55, 'max': 68, 'min': 66},
+            {'temp': 56, 'max': 66, 'min': 64}, {'temp': 57, 'max': 65, 'min': 63},
+            {'temp': 58, 'max': 63, 'min': 61}, {'temp': 59, 'max': 62, 'min': 60},
+            {'temp': 60, 'max': 60, 'min': 58}, {'temp': 61, 'max': 59, 'min': 57},
+            {'temp': 62, 'max': 57, 'min': 55}, {'temp': 63, 'max': 56, 'min': 54},
+            {'temp': 64, 'max': 55, 'min': 53}, {'temp': 65, 'max': 53, 'min': 51},
+            {'temp': 66, 'max': 52, 'min': 50}, {'temp': 67, 'max': 51, 'min': 49},
+            {'temp': 68, 'max': 50, 'min': 48}, {'temp': 69, 'max': 49, 'min': 47},
+            {'temp': 70, 'max': 47, 'min': 46}, {'temp': 71, 'max': 46, 'min': 44},
+            {'temp': 72, 'max': 45, 'min': 43}, {'temp': 73, 'max': 44, 'min': 42},
+            {'temp': 74, 'max': 43, 'min': 41}, {'temp': 75, 'max': 42, 'min': 40},
+            {'temp': 76, 'max': 41, 'min': 39}, {'temp': 77, 'max': 40, 'min': 38},
+            {'temp': 78, 'max': 39, 'min': 37}, {'temp': 79, 'max': 38, 'min': 36},
+            {'temp': 80, 'max': 37, 'min': 36}, {'temp': 81, 'max': 36, 'min': 35},
+            {'temp': 82, 'max': 36, 'min': 34}, {'temp': 83, 'max': 35, 'min': 33},
+            {'temp': 84, 'max': 34, 'min': 32}, {'temp': 85, 'max': 33, 'min': 32},
+            {'temp': 86, 'max': 32, 'min': 31}, {'temp': 87, 'max': 32, 'min': 30},
+            {'temp': 88, 'max': 31, 'min': 29}, {'temp': 89, 'max': 30, 'min': 29},
+            {'temp': 90, 'max': 29, 'min': 28}, {'temp': 91, 'max': 29, 'min': 27},
+            {'temp': 92, 'max': 28, 'min': 27}, {'temp': 93, 'max': 27, 'min': 26},
+            {'temp': 94, 'max': 27, 'min': 25}, {'temp': 95, 'max': 26, 'min': 25},
+            {'temp': 96, 'max': 26, 'min': 24}, {'temp': 97, 'max': 25, 'min': 24},
+            {'temp': 98, 'max': 24, 'min': 23}, {'temp': 99, 'max': 24, 'min': 22},
+            {'temp': 100, 'max': 23, 'min': 22}
+        ]
 
         # --- UI Layout ---
         self.notebook = ttk.Notebook(master)
@@ -41,6 +97,12 @@ class HIDTesterApp:
         self.notebook.tab(self.tab_test2, state='disabled') 
         
         master.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def _get_temp_from_adc(self, adc_value):
+        for entry in self.temp_table:
+            if entry['min'] <= adc_value <= entry['max']:
+                return entry['temp']
+        return "N/A"
 
     def _setup_connect_tab(self, tab):
         frame_top = ttk.Frame(tab)
@@ -167,6 +229,8 @@ class HIDTesterApp:
         ttk.Label(proc_f, textvariable=self.voltage_var, font=("Courier New", 10)).grid(row=0, column=1, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, text="Fan Duty:").grid(row=1, column=0, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, textvariable=self.fan_duty_var, font=("Courier New", 10)).grid(row=1, column=1, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, text="Temperature:").grid(row=2, column=0, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.temperature_var, font=("Courier New", 10)).grid(row=2, column=1, padx=5, pady=2, sticky="w")
 
         # --- Bottom part for raw input monitor ---
         in_f2 = ttk.LabelFrame(frame_io, text="Input Monitor")
@@ -182,9 +246,11 @@ class HIDTesterApp:
         self.monitor_text2.pack(fill="both", expand=True, padx=5, pady=5)
 
     def clear_tab3_monitors(self):
-        self.monitor_text2.delete('1.0', tk.END)
+        if self.monitor_text2:
+            self.monitor_text2.delete('1.0', tk.END)
         self.voltage_var.set("N/A")
         self.fan_duty_var.set("N/A")
+        self.temperature_var.set("N/A")
 
     def send_sequence2(self, commands):
         """Generic function to send a list of commands with 1s delay to tab 2."""
@@ -327,11 +393,16 @@ class HIDTesterApp:
             voltage_byte = data[4]
             fan_duty_byte = data[5]
             
+            # Calculate and display voltage
             voltage = (voltage_byte / 255.0) * 3.3
-            fan_duty = fan_duty_byte # Already in decimal
-            
             self.voltage_var.set(f"{voltage:.2f} V")
-            self.fan_duty_var.set(f"{fan_duty}")
+            
+            # Display fan duty
+            self.fan_duty_var.set(f"{fan_duty_byte}")
+
+            # Lookup and display temperature
+            temp = self._get_temp_from_adc(voltage_byte)
+            self.temperature_var.set(f"{temp} °C" if isinstance(temp, int) else temp)
 
     def _read_loop(self):
         if not self.reading_status or not self.device: return
