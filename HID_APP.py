@@ -15,6 +15,11 @@ class HIDTesterApp:
         self.ep_in = None
         self.ep_out = None
         self.reading_status = False
+        self.monitor_text2 = None
+
+        # Vars for processed data on tab 3
+        self.voltage_var = tk.StringVar(value="N/A")
+        self.fan_duty_var = tk.StringVar(value="N/A")
 
         # --- UI Layout ---
         self.notebook = ttk.Notebook(master)
@@ -26,8 +31,14 @@ class HIDTesterApp:
 
         self.tab_test = ttk.Frame(self.notebook)
         self.notebook.add(self.tab_test, text="2. Report Test")
-        self.notebook.tab(self.tab_test, state='disabled') 
         self._setup_test_tab(self.tab_test)
+
+        self.tab_test2 = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_test2, text="3. Report Test 2")
+        self._setup_test_tab2(self.tab_test2)
+
+        self.notebook.tab(self.tab_test, state='disabled') 
+        self.notebook.tab(self.tab_test2, state='disabled') 
         
         master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
@@ -73,7 +84,6 @@ class HIDTesterApp:
         frame_io = ttk.Frame(tab)
         frame_io.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # Corrected variable name: self.out_f
         self.out_f = ttk.LabelFrame(frame_io, text="Output Report")
         self.out_f.pack(fill="x", pady=5)
         
@@ -117,6 +127,74 @@ class HIDTesterApp:
         
         self.monitor_text = tk.Text(in_f, height=15, background="#f0f0f0")
         self.monitor_text.pack(fill="both", expand=True, padx=5, pady=5)
+
+    def _setup_test_tab2(self, tab):
+        frame_io = ttk.Frame(tab)
+        frame_io.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        # --- Top part for sending reports ---
+        self.out_f2 = ttk.LabelFrame(frame_io, text="Output Report")
+        self.out_f2.pack(fill="x", pady=5)
+        
+        ttk.Label(self.out_f2, text="Report ID (Hex):").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+        self.rid_entry2 = ttk.Entry(self.out_f2, width=10)
+        self.rid_entry2.insert(0, "20")
+        self.rid_entry2.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        
+        ttk.Label(self.out_f2, text="Data (Hex, spaces optional):").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        self.out_entry2 = ttk.Entry(self.out_f2, width=50)
+        self.out_entry2.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+        
+        ttk.Button(self.out_f2, text="Send Report", command=self.send_output_report2).grid(row=1, column=2, padx=10, pady=5)
+        self.out_f2.columnconfigure(1, weight=1)
+        
+        cmd_823 = ["E1 01 03", "10 01 05 10", "E1 01 02 F4 00"]
+        ttk.Button(self.out_f2, text="Set Motor Angle 82.3", command=lambda: self.send_sequence2(cmd_823)).grid(row=2, column=0, padx=10, pady=5)
+        cmd_15 = ["E1 01 03", "10 01 07 FD", "E1 01 02 0F 90"]
+        ttk.Button(self.out_f2, text="Set Motor Angle 15", command=lambda: self.send_sequence2(cmd_15)).grid(row=2, column=1, padx=10, pady=5)
+        ttk.Button(self.out_f2, text="Get Motor Position", command=lambda: [self.out_entry2.delete(0,tk.END), self.out_entry2.insert(0,"11 01")]).grid(row=3, column=0, padx=10, pady=5)
+        cmd_fan = ["F1 01 20", "F1 01 40 32"]
+        ttk.Button(self.out_f2, text="Fab on", command=lambda: self.send_sequence2(cmd_fan)).grid(row=3, column=1, padx=10, pady=5)
+        
+        ttk.Button(self.out_f2, text="Get Temp", 
+                   command=lambda: [self.out_entry2.delete(0,tk.END), self.out_entry2.insert(0,"F1 01 10")]).grid(row=4, column=0, padx=10, pady=5)
+
+        # --- Middle part for processed data ---
+        proc_f = ttk.LabelFrame(frame_io, text="Processed Data")
+        proc_f.pack(fill="x", pady=(10, 5))
+        
+        ttk.Label(proc_f, text="Voltage:").grid(row=0, column=0, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.voltage_var, font=("Courier New", 10)).grid(row=0, column=1, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, text="Fan Duty:").grid(row=1, column=0, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.fan_duty_var, font=("Courier New", 10)).grid(row=1, column=1, padx=5, pady=2, sticky="w")
+
+        # --- Bottom part for raw input monitor ---
+        in_f2 = ttk.LabelFrame(frame_io, text="Input Monitor")
+        in_f2.pack(fill="both", expand=True, pady=5)
+        
+        monitor_btn_frame2 = ttk.Frame(in_f2)
+        monitor_btn_frame2.pack(fill="x")
+        ttk.Button(monitor_btn_frame2, text="Start Monitor", command=self.start_reading).pack(side="left", padx=5, pady=2)
+        ttk.Button(monitor_btn_frame2, text="Stop Monitor", command=self.stop_reading).pack(side="left", padx=5, pady=2)
+        ttk.Button(monitor_btn_frame2, text="Clear", command=self.clear_tab3_monitors).pack(side="left", padx=5, pady=2)
+        
+        self.monitor_text2 = tk.Text(in_f2, height=10, background="#f0f0f0")
+        self.monitor_text2.pack(fill="both", expand=True, padx=5, pady=5)
+
+    def clear_tab3_monitors(self):
+        self.monitor_text2.delete('1.0', tk.END)
+        self.voltage_var.set("N/A")
+        self.fan_duty_var.set("N/A")
+
+    def send_sequence2(self, commands):
+        """Generic function to send a list of commands with 1s delay to tab 2."""
+        def execute_step(index):
+            if index < len(commands):
+                self.out_entry2.delete(0, tk.END)
+                self.out_entry2.insert(0, commands[index])
+                self.send_output_report2()
+                self.master.after(2000, lambda: execute_step(index + 1))
+        execute_step(0)
 
     def decode_hid_descriptor(self, data):
         results = []
@@ -191,6 +269,7 @@ class HIDTesterApp:
             self.ep_in = usb.util.find_descriptor(intf, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
             self.ep_out = usb.util.find_descriptor(intf, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
             self.notebook.tab(self.tab_test, state='normal')
+            self.notebook.tab(self.tab_test2, state='normal')
             self.notebook.select(self.tab_test)
             messagebox.showinfo("Success", f"Interface {intf_id} Claimed.")
         except Exception as e: 
@@ -211,6 +290,21 @@ class HIDTesterApp:
         except Exception as e: 
             messagebox.showerror("Write Error", str(e))
 
+    def send_output_report2(self):
+        try:
+            rid = int(self.rid_entry2.get(), 16)
+            data_str = self.out_entry2.get().replace(" ", "")
+            data = [int(data_str[i:i+2], 16) for i in range(0, len(data_str), 2)]
+            buf = [rid] + data
+            if self.ep_out:
+                self.ep_out.write(buf)
+            else:
+                self.device.ctrl_transfer(0x21, 0x09, (0x02 << 8) | rid, self.active_interface, buf)
+            self.monitor_text2.insert(tk.END, f"[SENT] ID:{hex(rid)} Data:{' '.join([f'{b:02X}' for b in data])}\n")
+            self.monitor_text2.see(tk.END)
+        except Exception as e: 
+            messagebox.showerror("Write Error", str(e))
+
     def start_reading(self):
         if not self.ep_in:
             messagebox.showwarning("Warning", "No IN endpoint available.")
@@ -218,15 +312,38 @@ class HIDTesterApp:
         self.reading_status = True
         self._read_loop()
 
+    def _process_incoming_data(self, data):
+        # Display raw data in both monitors
+        msg = f"[RECV] {' '.join([f'{b:02X}' for b in data])}\n"
+        if self.monitor_text:
+            self.monitor_text.insert(tk.END, msg)
+            self.monitor_text.see(tk.END)
+        if self.monitor_text2:
+            self.monitor_text2.insert(tk.END, msg)
+            self.monitor_text2.see(tk.END)
+
+        # Check for specific report and process it for tab 3
+        if len(data) >= 6 and data[0] == 0x20 and data[1] == 0xE1 and data[2] == 0x01 and data[3] == 0x10:
+            voltage_byte = data[4]
+            fan_duty_byte = data[5]
+            
+            voltage = (voltage_byte / 255.0) * 3.3
+            fan_duty = fan_duty_byte # Already in decimal
+            
+            self.voltage_var.set(f"{voltage:.2f} V")
+            self.fan_duty_var.set(f"{fan_duty}")
+
     def _read_loop(self):
         if not self.reading_status or not self.device: return
         try:
+            # Read data from the IN endpoint
             data = self.device.read(self.ep_in.bEndpointAddress, self.ep_in.wMaxPacketSize, timeout=20)
             if data:
-                self.monitor_text.insert(tk.END, f"[RECV] {' '.join([f'{b:02X}' for b in data])}\n")
-                self.monitor_text.see(tk.END)
+                self._process_incoming_data(data)
         except usb.core.USBError:
+            # This often happens on timeout, which is normal.
             pass 
+        # Schedule the next read
         self.master.after(10, self._read_loop)
 
     def stop_reading(self):
