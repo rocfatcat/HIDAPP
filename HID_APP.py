@@ -21,7 +21,8 @@ class HIDTesterApp:
         self.voltage_var = tk.StringVar(value="N/A")
         self.fan_duty_var = tk.StringVar(value="N/A")
         self.temperature_var = tk.StringVar(value="N/A")
-
+        self.voltage2_var = tk.StringVar(value="N/A")
+        self.temperature2_var = tk.StringVar(value="N/A")
         # Embed the temperature table directly into the code
         self.temp_table = [
             {'temp': 0, 'max': 188, 'min': 186}, {'temp': 1, 'max': 186, 'min': 184},
@@ -234,6 +235,12 @@ class HIDTesterApp:
         ttk.Label(proc_f, text="Temperature:").grid(row=2, column=0, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, textvariable=self.temperature_var, font=("Courier New", 10)).grid(row=2, column=1, padx=5, pady=2, sticky="w")
 
+        ttk.Label(proc_f, text="Voltage2 :").grid(row=0, column=2, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.voltage2_var, font=("Courier New", 10)).grid(row=0, column=3, padx=5, pady=2, sticky="w")
+        
+        ttk.Label(proc_f, text="Temperature 2:").grid(row=2, column=2, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.temperature2_var, font=("Courier New", 10)).grid(row=2, column=3, padx=5, pady=2, sticky="w")
+
         # --- Bottom part for raw input monitor ---
         in_f2 = ttk.LabelFrame(frame_io, text="Input Monitor")
         in_f2.pack(fill="both", expand=True, pady=5)
@@ -253,7 +260,9 @@ class HIDTesterApp:
         self.voltage_var.set("N/A")
         self.fan_duty_var.set("N/A")
         self.temperature_var.set("N/A")
-
+        self.voltage2_var.set("N/A")
+        self.temperature2_var.set("N/A")
+        
     def send_sequence2(self, commands):
         """Generic function to send a list of commands with 1s delay to tab 2."""
         def execute_step(index):
@@ -391,9 +400,10 @@ class HIDTesterApp:
             self.monitor_text2.see(tk.END)
 
         # Check for specific report and process it for tab 3
-        if len(data) >= 6 and data[0] == 0x20 and data[1] == 0xE1 and data[2] == 0x01 and data[3] == 0x10:
+        if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xE1 and data[2] == 0x01 and data[3] == 0x10:
             voltage_byte = data[4]
-            fan_duty_byte = data[5]
+            voltage2_byte = data[5]
+            fan_duty_byte = data[6]
             
             # Calculate and display voltage
             voltage = (voltage_byte / 255.0) * 3.3
@@ -405,6 +415,15 @@ class HIDTesterApp:
             # Lookup and display temperature
             temp = self._get_temp_from_adc(voltage_byte)
             self.temperature_var.set(f"{temp} °C" if isinstance(temp, int) else temp)
+            
+            # Calculate and display voltage
+            voltage2 = (voltage2_byte / 255.0) * 3.3
+            self.voltage2_var.set(f"{voltage2:.2f} V")
+            
+
+            # Lookup and display temperature
+            temp = self._get_temp_from_adc(voltage2_byte)
+            self.temperature2_var.set(f"{temp} °C" if isinstance(temp, int) else temp)
 
     def _read_loop(self):
         if not self.reading_status or not self.device: return
