@@ -211,9 +211,9 @@ class HIDTesterApp:
         ttk.Button(self.out_f2, text="Send Report", command=self.send_output_report2).grid(row=1, column=2, padx=10, pady=5)
         self.out_f2.columnconfigure(1, weight=1)
         
-        cmd_823 = ["E1 01 03", "10 01 05 10", "E1 01 02 F4 00"]
+        cmd_823 = ["E1 01 03", "10 01 05 10 05 16", "E1 01 02 F4 00"]
         ttk.Button(self.out_f2, text="Set Motor Angle 82.3", command=lambda: self.send_sequence2(cmd_823)).grid(row=2, column=0, padx=10, pady=5)
-        cmd_15 = ["E1 01 03", "10 01 07 FD", "E1 01 02 0F 90"]
+        cmd_15 = ["E1 01 03", "10 01 07 FD 05 16", "E1 01 02 0F 90"]
         ttk.Button(self.out_f2, text="Set Motor Angle 15", command=lambda: self.send_sequence2(cmd_15)).grid(row=2, column=1, padx=10, pady=5)
         cmd_angle = ["11 01"]
         ttk.Button(self.out_f2, text="Get Motor Position", command=lambda: self.send_sequence2(cmd_angle)).grid(row=3, column=0, padx=10, pady=5)
