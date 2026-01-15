@@ -163,11 +163,11 @@ class HIDTesterApp:
         self.out_f.columnconfigure(1, weight=1)
         
         # Sequence Buttons
-        cmd_823 = ["E1 01 03", "10 01 05 10 04 10", "E1 01 02 F0 00"]
+        cmd_823 = ["E1 01 03", "E1 01 F1","10 01 05 10 04 10", "E1 01 02 F0 00"]
         ttk.Button(self.out_f, text="Set Motor Angle 82.3", 
                    command=lambda: self.send_sequence(cmd_823)).grid(row=2, column=0, padx=10, pady=5)
                    
-        cmd_15 = ["E1 01 03", "10 01 07 FD 04 10", "E1 01 02 0F 90"]
+        cmd_15 = ["E1 01 03", "E1 01 F0", "10 01 07 FD 04 10", "E1 01 02 EB 00"]
         ttk.Button(self.out_f, text="Set Motor Angle 15", 
                    command=lambda: self.send_sequence(cmd_15)).grid(row=2, column=1, padx=10, pady=5)
                    
