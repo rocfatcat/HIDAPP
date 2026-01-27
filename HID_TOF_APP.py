@@ -32,6 +32,7 @@ class HIDTesterApp:
         self.tof5_var = tk.StringVar(value="N/A")
         self.tof6_var = tk.StringVar(value="N/A")
         self.tof7_var = tk.StringVar(value="N/A")
+        self.tof8_var = tk.StringVar(value="N/A")
 
         # Embed the temperature table directly into the code
         self.temp_table = [
