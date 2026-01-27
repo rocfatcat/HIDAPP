@@ -222,7 +222,7 @@ class HIDTesterApp:
         ttk.Button(self.out_f2, text="Send Report", command=self.send_output_report2).grid(row=1, column=2, padx=10, pady=5)
         self.out_f2.columnconfigure(1, weight=1)
         
-        cmd_823 = ["F0 01 F1", "F0 01 F2", "F0 01 F3", "F0 01 F4", "F0 01 F5"]
+        cmd_823 = ["F0 F1", "F0 F2", "F0 F3", "F0 F4", "F0 F5"]
         ttk.Button(self.out_f2, text="Get TOF Raw Data", command=lambda: self.send_sequence3(cmd_823)).grid(row=2, column=0, padx=10, pady=5)
 
 
