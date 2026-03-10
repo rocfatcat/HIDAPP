@@ -430,28 +430,28 @@ class HIDTesterApp:
             self.monitor_text2.see(tk.END)
 
         if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF0 and data[2] == 0xF1 and data[3] == 0xF0:
-            self.tof0_var.set(f"{data[4] << 8 | data[5]} mm")
-            self.tof1_var.set(f"{data[6] << 8 | data[7]} mm")
+            self.tof0_var.set(f"{(data[4] << 8 | data[5]):04X} mm")
+            self.tof1_var.set(f"{(data[6] << 8 | data[7]):04X} mm")
 
         if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF0 and data[2] == 0xF2 and data[3] == 0xF0:
-            self.tof2_var.set(f"{data[4] << 8 | data[5]} mm")
-            self.tof3_var.set(f"{data[6] << 8 | data[7]} mm")
+            self.tof2_var.set(f"{(data[4] << 8 | data[5]):04X} mm")
+            self.tof3_var.set(f"{(data[6] << 8 | data[7]):04X} mm")
 
         if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF0 and data[2] == 0xF3 and data[3] == 0xF0:
-            self.tof4_var.set(f"{data[4] << 8 | data[5]} mm")
-            self.tof5_var.set(f"{data[6] << 8 | data[7]} mm")
+            self.tof4_var.set(f"{(data[4] << 8 | data[5]):04X} mm")
+            self.tof5_var.set(f"{(data[6] << 8 | data[7]):04X} mm")
 
         if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF0 and data[2] == 0xF4 and data[3] == 0xF0:
-            self.tof6_var.set(f"{data[4] << 8 | data[5]} mm")
-            self.tof7_var.set(f"{data[6] << 8 | data[7]} mm")
+            self.tof6_var.set(f"{(data[4] << 8 | data[5]):04X} mm")
+            self.tof7_var.set(f"{(data[6] << 8 | data[7]):04X} mm")
 
         if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF0 and data[2] == 0xF5 and data[3] == 0xF0:
-            self.tof8_var.set(f"{data[4] << 8 | data[5]} mm")
+            self.tof8_var.set(f"{(data[4] << 8 | data[5]):04X} mm")
 
 
         if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF9:
-            self.Version_3740B_var.set(f"{data[2]}.{data[3]}.{data[4]}.{data[5]}")
-            self.Version_9772_var.set(f"{data[7]}.{data[8]}.{chr(data[9])}.{data[10]}")
+            self.Version_3740B_var.set(f"{data[2]:02X}.{data[3]:02X}.{data[4]:02X}.{data[5]:02X}")
+            self.Version_9772_var.set(f"{data[7]:02X}.{data[8]:02X}.0{chr(data[9])}.{data[10]:02X}")
 
         # Check for specific report and process it for tab 3
         if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xE1 and data[2] == 0x01 and data[3] == 0x10:
