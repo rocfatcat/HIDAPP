@@ -144,7 +144,7 @@ class HIDTesterApp:
         
         ttk.Button(frame_mid, text="Claim Interface", command=self.open_device).pack(side="left", padx=10)
 
-        self.detail_text = tk.Text(tab, height=25, background="#121212", foreground="#00FF41", font=("Courier New", 10))
+        self.detail_text = tk.Text(tab, height=25, background="#121212", foreground="#00FF41", font=("Courier New", 24))
         self.detail_text.pack(fill="both", expand=True, padx=10, pady=5)
 
     def send_sequence(self, commands):
@@ -235,31 +235,31 @@ class HIDTesterApp:
         proc_f.pack(fill="x", pady=(10, 5))
         
         ttk.Label(proc_f, text="TOF[0]:").grid(row=0, column=0, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.tof0_var, font=("Courier New", 10)).grid(row=0, column=1, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.tof0_var, font=("Courier New", 24)).grid(row=0, column=1, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, text="TOF[1]:").grid(row=0, column=2, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.tof1_var, font=("Courier New", 10)).grid(row=0, column=3, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.tof1_var, font=("Courier New", 24)).grid(row=0, column=3, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, text="TOF[2]:").grid(row=0, column=4, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.tof2_var, font=("Courier New", 10)).grid(row=0, column=5, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.tof2_var, font=("Courier New", 24)).grid(row=0, column=5, padx=5, pady=2, sticky="w")
 
         ttk.Label(proc_f, text="TOF[3]:").grid(row=1, column=0, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.tof3_var, font=("Courier New", 10)).grid(row=1, column=1, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.tof3_var, font=("Courier New", 24)).grid(row=1, column=1, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, text="TOF[4]:").grid(row=1, column=2, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.tof4_var, font=("Courier New", 10)).grid(row=1, column=3, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.tof4_var, font=("Courier New", 24)).grid(row=1, column=3, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, text="TOF[5]:").grid(row=1, column=4, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.tof5_var, font=("Courier New", 10)).grid(row=1, column=5, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.tof5_var, font=("Courier New", 24)).grid(row=1, column=5, padx=5, pady=2, sticky="w")
 
         ttk.Label(proc_f, text="TOF[6]:").grid(row=2, column=0, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.tof6_var, font=("Courier New", 10)).grid(row=2, column=1, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.tof6_var, font=("Courier New", 24)).grid(row=2, column=1, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, text="TOF[7]:").grid(row=2, column=2, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.tof7_var, font=("Courier New", 10)).grid(row=2, column=3, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.tof7_var, font=("Courier New", 24)).grid(row=2, column=3, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, text="TOF[8]:").grid(row=2, column=4, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.tof8_var, font=("Courier New", 10)).grid(row=2, column=5, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.tof8_var, font=("Courier New", 24)).grid(row=2, column=5, padx=5, pady=2, sticky="w")
         
         ttk.Label(proc_f, text="3740 (base) Version:").grid(row=3, column=0, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.Version_3740B_var, font=("Courier New", 10)).grid(row=3, column=1, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.Version_3740B_var, font=("Courier New", 24)).grid(row=3, column=1, padx=5, pady=2, sticky="w")
         
         ttk.Label(proc_f, text="9772 (Projection) Version:").grid(row=4, column=0, padx=5, pady=2, sticky="w")
-        ttk.Label(proc_f, textvariable=self.Version_9772_var, font=("Courier New", 10)).grid(row=4, column=1, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.Version_9772_var, font=("Courier New", 24)).grid(row=4, column=1, padx=5, pady=2, sticky="w")
         
         # --- Bottom part for raw input monitor ---
         in_f2 = ttk.LabelFrame(frame_io, text="Input Monitor")
