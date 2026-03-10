@@ -449,7 +449,7 @@ class HIDTesterApp:
             self.tof8_var.set(f"{data[4] << 8 | data[5]} mm")
 
 
-	if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF9:
+        if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF9:
             self.Version_3740B_var.set(f"{data[2]}.{data[3]}.{data[4]}.{data[5]}")
             self.Version_9772_var.set(f"{data[7]}.{data[8]}.{chr(data[9])}.{data[10]}")
 
