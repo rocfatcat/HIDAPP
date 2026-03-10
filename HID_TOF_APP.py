@@ -33,13 +33,17 @@ class HIDTesterApp:
         self.tof6_var = tk.StringVar(value="N/A")
         self.tof7_var = tk.StringVar(value="N/A")
         self.tof8_var = tk.StringVar(value="N/A")
+        
+        self.Version_3740B_var = tk.StringVar(value="N/A")
+        self.Version_9772_var = tk.StringVar(value="N/A")
+        
 
         # Embed the temperature table directly into the code
         self.temp_table = [
             {'temp': 0, 'max': 188, 'min': 186}, {'temp': 1, 'max': 186, 'min': 184},
             {'temp': 2, 'max': 184, 'min': 182}, {'temp': 3, 'max': 182, 'min': 180},
             {'temp': 4, 'max': 179, 'min': 177}, {'temp': 5, 'max': 177, 'min': 175},
-            {'temp': 6, 'max': 175, 'min': 173}, {'temp': 7, 'max': 172, 'min': 170},
+            {'temp': 6, 'max': 175, 'min': 173}, {'temp': 7, 'maxVersion_9772_var': 172, 'min': 170},
             {'temp': 8, 'max': 170, 'min': 168}, {'temp': 9, 'max': 168, 'min': 166},
             {'temp': 10, 'max': 165, 'min': 163}, {'temp': 11, 'max': 163, 'min': 161},
             {'temp': 12, 'max': 160, 'min': 158}, {'temp': 13, 'max': 158, 'min': 156},
@@ -250,7 +254,13 @@ class HIDTesterApp:
         ttk.Label(proc_f, textvariable=self.tof7_var, font=("Courier New", 10)).grid(row=2, column=3, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, text="TOF[8]:").grid(row=2, column=4, padx=5, pady=2, sticky="w")
         ttk.Label(proc_f, textvariable=self.tof8_var, font=("Courier New", 10)).grid(row=2, column=5, padx=5, pady=2, sticky="w")
-
+        
+        ttk.Label(proc_f, text="3740 (base) Version:").grid(row=3, column=0, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.Version_3740B_var, font=("Courier New", 10)).grid(row=3, column=1, padx=5, pady=2, sticky="w")
+        
+        ttk.Label(proc_f, text="9772 (Projection) Version:").grid(row=4, column=0, padx=5, pady=2, sticky="w")
+        ttk.Label(proc_f, textvariable=self.Version_9772_var, font=("Courier New", 10)).grid(row=4, column=1, padx=5, pady=2, sticky="w")
+        
         # --- Bottom part for raw input monitor ---
         in_f2 = ttk.LabelFrame(frame_io, text="Input Monitor")
         in_f2.pack(fill="both", expand=True, pady=5)
@@ -438,6 +448,10 @@ class HIDTesterApp:
         if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF0 and data[2] == 0xF5 and data[3] == 0xF0:
             self.tof8_var.set(f"{data[4] << 8 | data[5]} mm")
 
+
+	if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xF9:
+            self.Version_3740B_var.set(f"{data[2]}.{data[3]}.{data[4]}.{data[5]}")
+            self.Version_9772_var.set(f"{data[7]}.{data[8]}.{chr(data[9])}.{data[10]}")
 
         # Check for specific report and process it for tab 3
         if len(data) >= 7 and data[0] == 0x20 and data[1] == 0xE1 and data[2] == 0x01 and data[3] == 0x10:
