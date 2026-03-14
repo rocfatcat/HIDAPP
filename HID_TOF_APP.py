@@ -525,7 +525,7 @@ class HIDTesterApp:
             except: pass
         self.master.destroy()
         
-def take_photo(self, folder="captures", device_index=6):
+    def take_photo(self, folder="captures", device_index=6):
         """
         擷取照片並自動依照時間命名。
         預設存放在執行檔目錄下的 'captures' 資料夾。
