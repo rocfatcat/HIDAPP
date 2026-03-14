@@ -252,7 +252,7 @@ class HIDTesterApp:
         cmd_get_version = ["F9"]
         ttk.Button(self.out_f2, text="Get EC Version", command=lambda: self.send_sequence3(cmd_get_version)).grid(row=3, column=0, padx=10, pady=5)
 
-        ttk.Button(self.out_f2, text="Take Picture", command=self.take_photo(folder='/home/lqx70/Downloads/LQX70/images')).grid(row=3, column=1, padx=10, pady=5)
+        ttk.Button(self.out_f2, text="Take Picture", command=lambda: self.take_photo(folder='/home/lqx70/Downloads/LQX70/images')).grid(row=3, column=1, padx=10, pady=5)
         # --- Middle part for processed data ---
         proc_f = ttk.LabelFrame(frame_io, text="Processed Data")
         proc_f.pack(fill="x", pady=(10, 5))
