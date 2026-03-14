@@ -158,6 +158,16 @@ class HIDTesterApp:
                 self.master.after(2000, lambda: execute_step(index + 1))
         execute_step(0)
 
+    def send_sequence_8sec(self, commands):
+        """Generic function to send a list of commands with 1s delay."""
+        def execute_step(index):
+            if index < len(commands):
+                self.out_entry.delete(0, tk.END)
+                self.out_entry.insert(0, commands[index])
+                self.send_output_report()
+                # Schedule next step
+                self.master.after(8000, lambda: execute_step(index + 1))
+        execute_step(0)
     def _setup_test_tab(self, tab):
         frame_io = ttk.Frame(tab)
         frame_io.pack(fill="both", expand=True, padx=10, pady=10)
@@ -178,13 +188,17 @@ class HIDTesterApp:
         self.out_f.columnconfigure(1, weight=1)
         
         # Sequence Buttons
+        cmd_demo_test1 = ["10 01 07 FD 04 10", "10 01 05 10 04 10","10 01 07 FD 08 01","10 01 05 10 08 01","10 01 07 FD 08 01"]
+        ttk.Button(self.out_f, text="Motor Test demo", 
+                   command=lambda: self.send_sequence_8sec(cmd_demo_test1)).grid(row=2, column=0, padx=10, pady=5)
+                   
         cmd_823 = ["E1 01 03", "E1 01 F1","10 01 05 10 04 10", "E1 01 02 F0 00"]
         ttk.Button(self.out_f, text="Set Motor Angle 82.3", 
-                   command=lambda: self.send_sequence(cmd_823)).grid(row=2, column=0, padx=10, pady=5)
+                   command=lambda: self.send_sequence(cmd_823)).grid(row=2, column=1, padx=10, pady=5)
                    
         cmd_15 = ["E1 01 03", "E1 01 F0", "10 01 07 FD 04 10", "E1 01 02 EB 00"]
         ttk.Button(self.out_f, text="Set Motor Angle 15", 
-                   command=lambda: self.send_sequence(cmd_15)).grid(row=2, column=1, padx=10, pady=5)
+                   command=lambda: self.send_sequence(cmd_15)).grid(row=2, column=2, padx=10, pady=5)
                    
         ttk.Button(self.out_f, text="Get Motor Position", 
                    command=lambda: [self.out_entry.delete(0,tk.END), self.out_entry.insert(0,"11 01")]).grid(row=3, column=0, padx=10, pady=5)
