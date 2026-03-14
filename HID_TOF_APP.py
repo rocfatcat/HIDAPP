@@ -246,6 +246,7 @@ class HIDTesterApp:
         cmd_get_version = ["F9"]
         ttk.Button(self.out_f2, text="Get EC Version", command=lambda: self.send_sequence3(cmd_get_version)).grid(row=3, column=0, padx=10, pady=5)
 
+        ttk.Button(self.out_f2, test="Take Picture", command=take_photo).grid(row=3, column=1, padx=10, pady=5)
         # --- Middle part for processed data ---
         proc_f = ttk.LabelFrame(frame_io, text="Processed Data")
         proc_f.pack(fill="x", pady=(10, 5))
@@ -517,6 +518,36 @@ class HIDTesterApp:
                 usb.util.release_interface(self.device, self.active_interface)
             except: pass
         self.master.destroy()
+        
+    def take_photo(filename="webcam_capture.jpg", device_index=0):
+        # 1. 建立影音串流物件 (通常 USB WebCam 是 /dev/video0)
+        # 在 Jetson 上建議使用 cv2.CAP_V4L2
+        cap = cv2.VideoCapture(device_index, cv2.CAP_V4L2)
+
+        if not cap.isOpened():
+            print("錯誤：無法開啟攝影機。")
+            return
+
+        # 設定解析度 (選填，視攝影機支援度而定)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
+        # 2. 丟棄前幾幀 (讓攝影機自動對焦與調整曝光)
+        for _ in range(5):
+            cap.read()
+
+        # 3. 讀取影像
+        ret, frame = cap.read()
+
+        if ret:
+            # 4. 儲存檔案
+            cv2.imwrite(filename, frame)
+            print(f"照片已儲存至：{filename}")
+        else:
+            print("錯誤：無法抓取影像。")
+
+        # 5. 釋放資源
+        cap.release()
 
 if __name__ == "__main__":
     root = tk.Tk()
