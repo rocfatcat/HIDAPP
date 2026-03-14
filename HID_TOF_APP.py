@@ -162,18 +162,39 @@ class HIDTesterApp:
         execute_step(0)
 
     def send_sequence_8sec(self, commands):
-        """Generic function to send a list of commands with 1s delay."""
-        def execute_step(index):
-            if index < len(commands):
+        try:
+            total_loops = int(self.demo_count_entry.get())
+        except ValueError:
+            total_loops = 1
+
+        def execute_step(current_loop, cmd_index):
+            if current_loop >= total_loops:
+                self.monitor_text2.insert(tk.END, ">>> [FINISH] All Test Cycles Completed.\n")
+                return
+
+            if cmd_index < len(commands):
+                cmd = commands[cmd_index]
                 self.out_entry.delete(0, tk.END)
-                self.out_entry.insert(0, commands[index])
+                self.out_entry.insert(0, cmd)
                 self.send_output_report()
-                # Schedule next step
-                self.master.after(8000, lambda: execute_step(index + 1))
-                folder_name=commands[index].replace(" ", "_")
-                folder_name=os.path.join('/home/lqx70/Downloads/LQX70/images', folder_name)
-                self.take_photo(folder=folder_name);
-        execute_step(0)
+                
+                # 準備帶有 count 的檔名標籤 (例如: Loop001_100105...)
+                clean_cmd = cmd.replace(" ", "")
+                file_prefix = f"Loop{current_loop+1:03d}_{clean_cmd}"
+
+                # 7.5秒後拍照，直接傳入 prefix
+                self.master.after(7500, lambda: self.take_photo(
+                    folder='/home/lqx70/Downloads/LQX70/images', 
+                    prefix=file_prefix
+                ))
+
+                # 8秒後下一個指令
+                self.master.after(8000, lambda: execute_step(current_loop, cmd_index + 1))
+            else:
+                # 這一輪跑完，進入下一輪
+                self.master.after(1000, lambda: execute_step(current_loop + 1, 0))
+
+        execute_step(0, 0)
     def _setup_test_tab(self, tab):
         frame_io = ttk.Frame(tab)
         frame_io.pack(fill="both", expand=True, padx=10, pady=10)
@@ -197,21 +218,26 @@ class HIDTesterApp:
         cmd_demo_test1 = ["10 01 07 FD 04 10", "10 01 05 10 04 10","10 01 07 FD 08 01","10 01 05 10 08 01","10 01 07 FD 08 01"]
         ttk.Button(self.out_f, text="Motor Test demo", 
                    command=lambda: self.send_sequence_8sec(cmd_demo_test1)).grid(row=2, column=0, padx=10, pady=5)
-                   
+        
+        ttk.Label(self.out_f, text="Demo Count:").grid(row=2, column=1, padx=5, pady=5, sticky="e")
+        self.demo_count_entry = ttk.Entry(self.out_f, width=10)
+        self.demo_count_entry.insert(0, "10")
+        self.demo_count_entry.grid(row=2, column=3, padx=5, pady=5, sticky="w")
+        
         cmd_823 = ["E1 01 03", "E1 01 F1","10 01 05 10 04 10", "E1 01 02 F0 00"]
         ttk.Button(self.out_f, text="Set Motor Angle 82.3", 
-                   command=lambda: self.send_sequence(cmd_823)).grid(row=2, column=1, padx=10, pady=5)
+                   command=lambda: self.send_sequence(cmd_823)).grid(row=3, column=0, padx=10, pady=5)
                    
         cmd_15 = ["E1 01 03", "E1 01 F0", "10 01 07 FD 04 10", "E1 01 02 EB 00"]
         ttk.Button(self.out_f, text="Set Motor Angle 15", 
-                   command=lambda: self.send_sequence(cmd_15)).grid(row=2, column=2, padx=10, pady=5)
+                   command=lambda: self.send_sequence(cmd_15)).grid(row=3, column=0, padx=10, pady=5)
                    
         ttk.Button(self.out_f, text="Get Motor Position", 
-                   command=lambda: [self.out_entry.delete(0,tk.END), self.out_entry.insert(0,"11 01")]).grid(row=3, column=0, padx=10, pady=5)
+                   command=lambda: [self.out_entry.delete(0,tk.END), self.out_entry.insert(0,"11 01")]).grid(row=4, column=0, padx=10, pady=5)
                    
         cmd_fan = ["F1 01 20", "F1 01 40 32"]
         ttk.Button(self.out_f, text="Fan on", 
-                   command=lambda: self.send_sequence(cmd_fan)).grid(row=3, column=1, padx=10, pady=5)
+                   command=lambda: self.send_sequence(cmd_fan)).grid(row=4, column=1, padx=10, pady=5)
         
         # Input Section
         in_f = ttk.LabelFrame(frame_io, text="Input Monitor")
@@ -525,50 +551,38 @@ class HIDTesterApp:
             except: pass
         self.master.destroy()
         
-    def take_photo(self, folder="captures", device_index=6):
+    def take_photo(self, folder="captures", device_index=6, prefix=""):
         """
-        擷取照片並自動依照時間命名。
-        預設存放在執行檔目錄下的 'captures' 資料夾。
+        prefix: 傳入 Loop 次數與指令名稱
         """
-        # 1. 檢查並建立資料夾
         if not os.path.exists(folder):
-            try:
-                os.makedirs(folder)
-                print(f"已建立資料夾：{folder}")
-            except Exception as e:
-                messagebox.showerror("資料夾錯誤", f"無法建立資料夾 {folder}: {e}")
-                return
+            os.makedirs(folder, exist_ok=True)
 
-        # 2. 產生年月日時分秒檔名 (例如: 20260314_183005.jpg)
+        # 產生檔名：Prefix + 時間 (例如: Loop001_100105_20260314_192005.jpg)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = os.path.join(folder, f"{timestamp}.jpg")
+        name_str = f"{prefix}_{timestamp}.jpg" if prefix else f"{timestamp}.jpg"
+        filename = os.path.join(folder, name_str)
 
-        # 3. 啟動攝影機
         cap = cv2.VideoCapture(device_index, cv2.CAP_V4L2)
-
         if not cap.isOpened():
-            messagebox.showerror("攝影機錯誤", f"無法開啟索引為 {device_index} 的攝影機。")
+            print(f"攝影機 {device_index} 開啟失敗")
             return
 
-        # 設定解析度
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
-        # 丟棄前幾幀讓硬體穩定
+        # 緩衝丟棄幀
         for _ in range(5):
             cap.read()
 
         ret, frame = cap.read()
-
         if ret:
-            # 4. 儲存檔案
             cv2.imwrite(filename, frame)
-            print(f"照片已儲存至：{filename}")
-            # 可選：在 UI 提示儲存成功
-            # self.monitor_text2.insert(tk.END, f"[IMAGE] Saved: {filename}\n")
-        else:
-            messagebox.showerror("擷取錯誤", "無法抓取影像，請檢查設備連接。")
-
+            # 在 UI 上顯示存檔路徑，方便確認
+            if self.monitor_text2:
+                self.monitor_text2.insert(tk.END, f"[IMAGE] {name_str} saved.\n")
+                self.monitor_text2.see(tk.END)
+        
         cap.release()
 
 if __name__ == "__main__":
