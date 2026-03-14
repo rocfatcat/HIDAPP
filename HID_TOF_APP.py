@@ -243,6 +243,8 @@ class HIDTesterApp:
         cmd_823 = ["F0 F1", "F0 F2", "F0 F3", "F0 F4", "F0 F5"]
         ttk.Button(self.out_f2, text="Get TOF Raw Data", command=lambda: self.send_sequence3(cmd_823)).grid(row=2, column=0, padx=10, pady=5)
 
+        cmd_get_version = ["F9"]
+        ttk.Button(self.out_f2, text="Get EC Version", command=lambda: self.send_sequence3(cmd_get_version)).grid(row=3, column=0, padx=10, pady=5)
 
         # --- Middle part for processed data ---
         proc_f = ttk.LabelFrame(frame_io, text="Processed Data")
