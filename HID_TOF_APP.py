@@ -3,6 +3,9 @@ from tkinter import ttk, messagebox
 import usb.core
 import usb.util
 import time
+import os
+import cv2
+from datetime import datetime
 
 class HIDTesterApp:
     def __init__(self, master):
@@ -167,6 +170,9 @@ class HIDTesterApp:
                 self.send_output_report()
                 # Schedule next step
                 self.master.after(8000, lambda: execute_step(index + 1))
+                folder_name=commands[index].replace(" ", "_")
+                folder_name=os.path.join('/home/lqx70/Downloads/LQX70/images', folder_name)
+                self.take_photo(folder=folder_name);
         execute_step(0)
     def _setup_test_tab(self, tab):
         frame_io = ttk.Frame(tab)
@@ -246,7 +252,7 @@ class HIDTesterApp:
         cmd_get_version = ["F9"]
         ttk.Button(self.out_f2, text="Get EC Version", command=lambda: self.send_sequence3(cmd_get_version)).grid(row=3, column=0, padx=10, pady=5)
 
-        ttk.Button(self.out_f2, test="Take Picture", command=take_photo).grid(row=3, column=1, padx=10, pady=5)
+        ttk.Button(self.out_f2, text="Take Picture", command=self.take_photo(folder='/home/lqx70/Downloads/LQX70/images')).grid(row=3, column=1, padx=10, pady=5)
         # --- Middle part for processed data ---
         proc_f = ttk.LabelFrame(frame_io, text="Processed Data")
         proc_f.pack(fill="x", pady=(10, 5))
@@ -519,34 +525,50 @@ class HIDTesterApp:
             except: pass
         self.master.destroy()
         
-    def take_photo(filename="webcam_capture.jpg", device_index=0):
-        # 1. 建立影音串流物件 (通常 USB WebCam 是 /dev/video0)
-        # 在 Jetson 上建議使用 cv2.CAP_V4L2
+def take_photo(self, folder="captures", device_index=6):
+        """
+        擷取照片並自動依照時間命名。
+        預設存放在執行檔目錄下的 'captures' 資料夾。
+        """
+        # 1. 檢查並建立資料夾
+        if not os.path.exists(folder):
+            try:
+                os.makedirs(folder)
+                print(f"已建立資料夾：{folder}")
+            except Exception as e:
+                messagebox.showerror("資料夾錯誤", f"無法建立資料夾 {folder}: {e}")
+                return
+
+        # 2. 產生年月日時分秒檔名 (例如: 20260314_183005.jpg)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = os.path.join(folder, f"{timestamp}.jpg")
+
+        # 3. 啟動攝影機
         cap = cv2.VideoCapture(device_index, cv2.CAP_V4L2)
 
         if not cap.isOpened():
-            print("錯誤：無法開啟攝影機。")
+            messagebox.showerror("攝影機錯誤", f"無法開啟索引為 {device_index} 的攝影機。")
             return
 
-        # 設定解析度 (選填，視攝影機支援度而定)
+        # 設定解析度
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
-        # 2. 丟棄前幾幀 (讓攝影機自動對焦與調整曝光)
+        # 丟棄前幾幀讓硬體穩定
         for _ in range(5):
             cap.read()
 
-        # 3. 讀取影像
         ret, frame = cap.read()
 
         if ret:
             # 4. 儲存檔案
             cv2.imwrite(filename, frame)
             print(f"照片已儲存至：{filename}")
+            # 可選：在 UI 提示儲存成功
+            # self.monitor_text2.insert(tk.END, f"[IMAGE] Saved: {filename}\n")
         else:
-            print("錯誤：無法抓取影像。")
+            messagebox.showerror("擷取錯誤", "無法抓取影像，請檢查設備連接。")
 
-        # 5. 釋放資源
         cap.release()
 
 if __name__ == "__main__":
