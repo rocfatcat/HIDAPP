@@ -180,7 +180,7 @@ class HIDTesterApp:
                 
                 # 準備帶有 count 的檔名標籤 (例如: Loop001_100105...)
                 clean_cmd = cmd.replace(" ", "")
-                file_prefix = f"Loop{current_loop+1:03d}_{clean_cmd}"
+                file_prefix = f"{clean_cmd}_Loop{current_loop+1:03d}"
 
                 # 7.5秒後拍照，直接傳入 prefix
                 self.master.after(7500, lambda: self.take_photo(
